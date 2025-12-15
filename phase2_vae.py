@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Phase 2: Variational Autoencoder (VAE) Training
-Loads data from Phase 1, trains a VAE, and generates synthetic samples.
-"""
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
