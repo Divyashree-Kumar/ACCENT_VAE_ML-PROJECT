@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Phase 1: Baseline Models on Original Dataset
-FINAL VERSION - Loads from local CSV file
-"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
