@@ -38,9 +38,3 @@ Technologies
 * NumPy
 
 
-Author
-
-Divya Shree
-GitHub: [https://github.com/Divyashree-Kumar](https://github.com/Divyashree-Kumar)
-
-If you want, I can make an **even shorter version (resume-ready)** or **format it for college project submission**.
