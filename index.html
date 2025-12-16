@@ -247,6 +247,17 @@
 
         <!-- Main Content -->
         <div class="content">
+
+            <!-- Try the model -->
+            <section class="section">
+                <h2>Try the Accent Model</h2>
+                <form id="accent-form">
+                    <input type="file" id="audio-file" name="file" accept="audio/*" required />
+                    <button type="submit">Predict Accent</button>
+                </form>
+                <p id="result"></p>
+            </section>
+
             <!-- Overview -->
             <section class="section">
                 <h2>Project Overview</h2>
@@ -455,6 +466,7 @@
         </div>
     </div>
 
+    <!-- Charts -->
     <script>
         const ctx = document.getElementById('comparisonChart').getContext('2d');
         new Chart(ctx, {
@@ -506,6 +518,43 @@
                         }
                     }
                 }
+            }
+        });
+    </script>
+
+    <!-- Call backend -->
+    <script>
+        const form = document.getElementById('accent-form');
+        const resultP = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('audio-file');
+            if (!fileInput.files.length) {
+                resultP.textContent = 'Please select an audio file.';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/predict-accent', {
+                    method: 'POST',
+                    body: formData
+                }); /* using standard Fetch + FormData upload pattern [web:256][web:263] */
+
+                if (!response.ok) {
+                    resultP.textContent = 'Error: ' + response.statusText;
+                    return;
+                }
+
+                const data = await response.json();
+                resultP.textContent =
+                    `Accent: ${data.accent} | Confidence: ${data.confidence} | File: ${data.filename}`;
+            } catch (err) {
+                resultP.textContent = 'Request failed: ' + err;
             }
         });
     </script>
