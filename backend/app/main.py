@@ -4,12 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from .model import predict_from_features
 from .audio_utils import extract_mfcc_12_from_bytes
 
+
 app = FastAPI()
 
-# CORS so index.html can call the API
+# Allow your static HTML (opened from file or localhost) to call this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       # later you can restrict this to your frontend origin
+    allow_origins=["*"],          # You can restrict this later
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -17,19 +18,28 @@ app.add_middleware(
 
 
 @app.get("/")
-def read_root():
+async def read_root():
     return {"message": "Accent VAE API is running"}
 
 
 @app.post("/predict-accent")
 async def predict_accent(file: UploadFile = File(...)):
-    # Read uploaded audio
+    """
+    Receive an uploaded audio file, extract 12-D MFCC features,
+    run the VAE+classifier pipeline, and return the predicted accent.
+    """
+    # Read uploaded audio into memory
     audio_bytes = await file.read()
 
-    # Extract 12‑D MFCC features from the audio bytes
+    # Convert raw bytes -> 12 MFCC features (np.ndarray or list-like)
     features = extract_mfcc_12_from_bytes(audio_bytes)
 
-    # Get model prediction (e.g., accent label and/or probabilities)
-    result = predict_from_features(features)
+    # Get accent label (string) from your trained pipeline
+    accent_label = predict_from_features(features)
 
-    return {"prediction": result}
+    # Frontend expects: accent, confidence, filename
+    return {
+        "accent": accent_label,
+        "confidence": 1.0,      # replace with real confidence later if you add it
+        "filename": file.filename,
+    }
